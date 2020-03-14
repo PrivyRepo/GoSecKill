@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{{range $index, $elem := .products}}
+    <div class="h-100">
+    <a href="/product/detail?id={{$elem.ID}}"> {{$index}} - {{$elem.ID}} - {{$elem.ProductName}} - {{$elem.ProductNum}} - {{$elem.ProductImage}}</a>
+    </div>
+{{end}}
+
+</body>
+</html>
