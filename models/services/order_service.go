@@ -14,6 +14,7 @@ type IOrderService interface {
 	GetAllOrderInfo() (map[int]map[string]string, error)
 	GetOrderInfoByID(int64) (map[string]string, error)
 	UpdateOrderByID(int64) bool
+	InsertOrderByMessage(*datamodels.Message) (int64, error)
 }
 
 type OrderService struct {
@@ -54,4 +55,14 @@ func (o *OrderService) UpdateOrderByID(id int64) bool {
 
 func NewOrderService(repository repositories.IOrderRepository) IOrderService {
 	return &OrderService{repository}
+}
+
+//根据消息创建订单
+func (o *OrderService) InsertOrderByMessage(message *datamodels.Message) (orderID int64, err error) {
+	order := &datamodels.Order{
+		UserId:      message.UserID,
+		ProductId:   message.ProductID,
+		OrderStatus: datamodels.OrderSuccess,
+	}
+	return o.InsertOrder(order)
 }

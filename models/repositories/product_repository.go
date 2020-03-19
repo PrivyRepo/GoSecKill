@@ -23,6 +23,9 @@ type IProduct interface {
 	Update(*datamodels.Product) error
 	SelectByKey(int64) (*datamodels.Product, error)
 	SelectAll() ([]datamodels.Product, error)
+	SelectByshopId(int64) ([]datamodels.Product, error)
+	SubProductNum(productID int64) error
+	IncrProductReview(productId int64) bool
 }
 
 type ProductManager struct {
@@ -52,10 +55,7 @@ func (p *ProductManager) Conn() (err error) {
 
 func (p *ProductManager) RedisConn() (err error) {
 	if p.redisConn == nil {
-		conn, err := common.NewRedisConn()
-		if err != nil {
-			return err
-		}
+		conn := common.NewRedisConn()
 		p.redisConn = conn
 	}
 	return
@@ -68,13 +68,13 @@ func (p *ProductManager) Insert(product *datamodels.Product) (productId int64, e
 		return
 	}
 	//2.准备sql
-	sql := "INSERT product SET productName=?,productNum=?,productImage=?,productUrl=?"
+	sql := "INSERT product SET shopID=?,productName=?,productNum=?,productImage=?,productReviews=?,productOldprice=?,productNewprice=?,productDescription=?"
 	stmt, errSql := p.mysqlConn.Prepare(sql)
 	if errSql != nil {
 		return 0, errSql
 	}
 	//3.传入参数
-	result, errStmt := stmt.Exec(product.ProductName, product.ProductNum, product.ProductImage, product.ProductUrl)
+	result, errStmt := stmt.Exec(product.Shopid, product.ProductName, product.ProductNum, product.ProductImage, product.ProductReviews, product.ProductOldprice, product.ProductNewprice, product.ProductDescription)
 	if errStmt != nil {
 		return 0, errStmt
 	}
@@ -106,14 +106,14 @@ func (p *ProductManager) Update(product *datamodels.Product) error {
 		return err
 	}
 
-	sql := "Update product set productName=?,productNum=?,productImage=?,productUrl=? where ID=" + strconv.FormatInt(product.ID, 10)
+	sql := "Update product set productName=?,productNum=?,productImage=?,productReviews=?,productOldprice=?,productNewprice=?,productDescription=? where ID = " + strconv.FormatInt(product.ID, 10)
 
 	stmt, err := p.mysqlConn.Prepare(sql)
 	if err != nil {
 		return err
 	}
 
-	_, err = stmt.Exec(product.ProductName, product.ProductNum, product.ProductImage, product.ProductUrl)
+	_, err = stmt.Exec(product.ProductName, product.ProductNum, product.ProductImage, product.ProductReviews, product.ProductOldprice, product.ProductNewprice, product.ProductDescription)
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ func (p *ProductManager) SelectAll() (productArray []datamodels.Product, errProd
 		if err := p.Conn(); err != nil {
 			return nil, err
 		}
-		sql := "Select * from " + p.table
+		sql := "Select * from " + p.table + " ORDER BY ID "
 		rows, errProduct := p.mysqlConn.Query(sql)
 		defer rows.Close()
 		if errProduct != nil {
@@ -178,15 +178,67 @@ func (p *ProductManager) SelectAll() (productArray []datamodels.Product, errProd
 			common.DataToStructByTagSql(v, product)
 			productArray = append(productArray, *product)
 		}
-		var buffer bytes.Buffer
-		encoder := gob.NewEncoder(&buffer)
-		_ = encoder.Encode(productArray)
-		_, err := p.redisConn.Do("set", "products", buffer.Bytes())
-		if err != nil {
-			fmt.Println(err)
-		}
+		//var buffer bytes.Buffer
+		//encoder := gob.NewEncoder(&buffer)
+		//_ = encoder.Encode(productArray)
+		//_, err := p.redisConn.Do("set", "products", buffer.Bytes(),"EX","1")
+		//if err != nil {
+		//	fmt.Println(err)
+		//}
 	} else {
 		fmt.Println("数据存在redis，从redis中获取")
 	}
 	return
+}
+func (p *ProductManager) SubProductNum(productID int64) error {
+	if err := p.Conn(); err != nil {
+		return err
+	}
+	sql := "update " + p.table + " set " + " productNum=productNum-1 where ID =" + strconv.FormatInt(productID, 10)
+	stmt, err := p.mysqlConn.Prepare(sql)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec()
+	return err
+}
+
+func (p *ProductManager) SelectByshopId(shopid int64) (productArray []datamodels.Product, errProduct error) {
+	//1.判断连接是否存在
+	if err := p.Conn(); err != nil {
+		return nil, err
+	}
+
+	sql := "Select * from " + p.table + " WHERE shopID = " + strconv.FormatInt(shopid, 10) + " ORDER BY ID "
+	rows, errProduct := p.mysqlConn.Query(sql)
+	defer rows.Close()
+	if errProduct != nil {
+		return nil, errProduct
+	}
+
+	result := common.GetResultRows(rows)
+	if len(result) == 0 {
+		return nil, nil
+	}
+
+	for _, v := range result {
+		product := &datamodels.Product{}
+		common.DataToStructByTagSql(v, product)
+		productArray = append(productArray, *product)
+	}
+	return
+}
+
+func (p *ProductManager) IncrProductReview(productId int64) bool {
+	//1.判断连接是否存在
+	if err := p.Conn(); err != nil {
+		return false
+	}
+
+	sql := "UPDATE " + p.table + " SET productreviews = productreviews + 1  WHERE ID = " + strconv.FormatInt(productId, 10)
+	_, e := p.mysqlConn.Exec(sql)
+	if e != nil {
+		return false
+	}
+	return true
 }

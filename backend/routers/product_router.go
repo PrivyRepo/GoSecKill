@@ -13,8 +13,10 @@ func init() {
 	if common.CheckErr(err) {
 		return
 	}
-	productrepo := repositories.NewProductManager("product", db)
+	conn := common.NewRedisConn()
+	productrepo := repositories.NewProductManager("product", db, conn)
 	productservice := services.NewProductService(productrepo)
+
 	productcontroller := &controllers.ProductController{ProductService: productservice}
 	beego.Router("/product/list", productcontroller, "get:GetAll")
 	beego.Router("/product/update", productcontroller, "get:GetManager;post:PostManager")

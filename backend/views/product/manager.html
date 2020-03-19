@@ -1,5 +1,5 @@
 <div class="page-head">
-    <h2 class="page-head-title">商品管理</h2>
+    <h2 class="page-head-title">修改商品</h2>
 
 </div>
 
@@ -10,31 +10,45 @@
                 <div class="panel-heading panel-heading-divider">商品详细<span class="panel-subtitle">可以修改商品详情</span></div>
                 <div class="panel-body">
                     <form action="/product/update" style="border-radius: 0px;" class="form-horizontal group-border-dashed" method="post" >
-                        <input type="text" name="ID" value="{{.product.ID}}" hidden>
+                        <input type="text" name="id" value="{{.product.ID}}" hidden>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">商品名称</label>
+                            <label class="col-sm-3 control-label">名称</label>
                             <div class="col-sm-6">
                                 <input type="text" class="form-control" name="ProductName" value="{{.product.ProductName}}">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">商品数量</label>
+                            <label class="col-sm-3 control-label">数量</label>
                             <div class="col-sm-6">
                                 <input type="text" class="form-control" name="ProductNum" value="{{.product.ProductNum}}">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">商品图片地址</label>
+                            <label class="col-sm-3 control-label">旧价格</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="ProductOldprice" value="{{.product.ProductOldprice}}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">新价格</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="ProductNewsprice" value="{{.product.ProductNewprice}}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">图片地址</label>
                             <div class="col-sm-6">
                                 <input type="text"   class="form-control" name="ProductImage" value="{{.product.ProductImage}}">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">商品访问链接</label>
+                            <label class="col-sm-3 control-label">描述信息</label>
                             <div class="col-sm-6">
-                                <input type="text"   class="form-control" name="ProductUrl" value="{{.product.ProductUrl}}">
+                                <textarea class="form-control" name="ProductDescription" >{{.product.ProductDescription}}</textarea>
                             </div>
                         </div>
+                        <input type="hidden" class="form-control" name="ProductReviews" value="{{.product.ProductReviews}}" hidden="hidden">
                         <div class="row xs-pt-15">
                             <div class="col-xs-6">
                                 <p class="text-right">

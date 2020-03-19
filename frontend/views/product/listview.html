@@ -1,15 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-{{range $index, $elem := .products}}
-    <div class="h-100">
-    <a href="/product/detail?id={{$elem.ID}}"> {{$index}} - {{$elem.ID}} - {{$elem.ProductName}} - {{$elem.ProductNum}} - {{$elem.ProductImage}}</a>
-    </div>
-{{end}}
+<!-- Navigation -->
+<header class="nav" xmlns="http://www.w3.org/1999/html">
 
-</body>
-</html>
+    <div style = "position: fixed;height:80px;left:0;right: 0;top:0;background-color: #0a001f;font-size: 16px;color: white">
+        <div class="left px-xl-5 py-xl-4">
+            <a href="/product/list" class="white">
+                <i class="ui-github">
+                </i>
+                Home
+            </a>
+        </div>
+        <div class="right px-xl-5 py-xl-4 ">
+            {{if .IsLogin}}
+                <a href="/user/logout" class="white mx-5" ><i class="ui-user"></i>Log Out</a>
+            {{else}}
+                <a href="/user/login" class="white mx-5" ><i class="ui-user"></i>Sign In</a>
+            {{end}}
+            <a href="#" class="white" >
+                <i class="ui-bag"></i>Order
+            </a>
+        </div>
+    </div>
+
+</header> <!-- end navigation -->
+
+<section class="section-wrap pt-0 pb-40">
+    <div class="container">
+        <div class="heading-row mt-xl-5">
+            <div class="text-center">
+                <h2 class="heading bottom-line">
+                    商品列表
+                </h2>
+            </div>
+        </div>
+
+        <div class="row row-8">
+            {{range $index, $elem := .products}}
+                <div class="col-lg-2 col-sm-4 product">
+                <div class="product__img-holder">
+                    <a href="/product/detail?id={{$elem.ID}}" class="product__link">
+                        <img src="{{$elem.ProductImage}}" alt="" class="product__img" width="205px" height="283px">
+                    </a>
+                    <div class="product__actions">
+                        <a href="/product/detail?id={{$elem.ID}}" class="product__quickview" style="width: 100%">
+                            <i class="ui-eye"></i>
+                            <span>Quick View</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="product__details">
+                    <h3 class="product__title">
+                        <a href="single-product.html">{{$elem.ProductName}}</a>
+                    </h3>
+                </div>
+
+                <span class="product__price">
+              <ins>
+                <span class="amount">￥{{$elem.ProductNewprice}}</span>
+              </ins>
+              <del>
+                <span>￥{{$elem.ProductOldprice}}</span>
+              </del>
+            </span>
+            </div> <!-- end product -->
+            {{end}}
+
+        </div> <!-- end row -->
+    </div> <!-- end container -->
+</section> <!-- end related products -->
+

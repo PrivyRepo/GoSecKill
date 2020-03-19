@@ -7,7 +7,9 @@ import (
 
 //创建mysql 连接
 func NewMysqlConn() (db *sql.DB, err error) {
-	db, err = sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/homework?charset=utf8")
+	db, err = sql.Open("mysql", "root:root@tcp(192.168.19.200:3306)/homework?charset=utf8")
+	db.SetMaxOpenConns(2000)
+	db.SetMaxIdleConns(1000)
 	return
 }
 
@@ -37,6 +39,7 @@ func GetResultRow(rows *sql.Rows) map[string]string {
 func GetResultRows(rows *sql.Rows) map[int]map[string]string {
 	//返回所有列
 	columns, _ := rows.Columns()
+
 	//这里表示一行所有列的值，用[]byte表示
 	vals := make([][]byte, len(columns))
 	//这里表示一行填充数据

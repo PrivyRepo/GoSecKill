@@ -14,7 +14,6 @@ type UserController struct {
 }
 
 func (this *UserController) GetRegister() {
-	this.Layout = "shared/layout.html"
 	this.TplName = "user/register.html"
 }
 
@@ -38,7 +37,6 @@ func (this *UserController) PostRegister() {
 }
 
 func (this *UserController) GetLogin() {
-	this.Layout = "shared/layout.html"
 	this.TplName = "user/login.html"
 }
 
@@ -51,16 +49,21 @@ func (this *UserController) PostLogin() {
 	//2.验证好账号密码正确
 	user, isOk := this.UserService.IsPwdSuccess(userName, password)
 	if !isOk {
-		this.Layout = "user/login.html"
-		return
+		this.Abort("401")
 	}
 	//3.写入用户ID到cookie中
 	uidByte := []byte(strconv.FormatInt(user.ID, 10))
 	uidString, e := common.EnPwdCode(uidByte)
 	if common.CheckErr(e) {
-		return
+		this.Abort("401")
 	}
 	this.Ctx.SetCookie("uid", strconv.FormatInt(user.ID, 10), "/")
 	this.Ctx.SetCookie("sign", uidString, "/")
+	this.Ctx.Redirect(302, "/product/list")
+}
+
+func (this *UserController) GetLogout() {
+	this.Ctx.SetCookie("uid", "", -1)
+	this.Ctx.SetCookie("sign", "", -1)
 	this.Ctx.Redirect(302, "/product/list")
 }

@@ -13,9 +13,12 @@ func init() {
 	if common.CheckErr(err) {
 		return
 	}
-	userrepo := repositories.NewUserRepository("user", db)
+	redisconn := common.NewRedisConn()
+	userrepo := repositories.NewUserRepository("user", db, redisconn)
 	userservice := services.NewUserService(userrepo)
 	usercontroller := &controllers.UserController{UserService: userservice}
 	beego.Router("/user/register", usercontroller, "get:GetRegister;post:PostRegister")
 	beego.Router("/user/login", usercontroller, "get:GetLogin;post:PostLogin")
+	beego.Router("/user/logout", usercontroller, "get:GetLogout")
+
 }

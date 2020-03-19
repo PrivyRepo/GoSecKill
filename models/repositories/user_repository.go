@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"errors"
+	"github.com/gomodule/redigo/redis"
 	"homework/common"
 	"homework/models/datamodels"
 	"strconv"
@@ -17,6 +18,7 @@ type IUserRepository interface {
 type UserRepository struct {
 	table     string
 	mysqlConn *sql.DB
+	redisConn redis.Conn
 }
 
 func (u UserRepository) Conn() error {
@@ -82,6 +84,6 @@ func (u *UserRepository) SelectByID(userId int64) (*datamodels.User, error) {
 	return user, nil
 }
 
-func NewUserRepository(table string, db *sql.DB) IUserRepository {
-	return &UserRepository{table, db}
+func NewUserRepository(table string, db *sql.DB, redisConn redis.Conn) IUserRepository {
+	return &UserRepository{table, db, redisConn}
 }
