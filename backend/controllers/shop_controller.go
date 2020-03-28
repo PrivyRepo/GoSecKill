@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"homework/common"
+	"homework/common/encrypt"
 	"homework/models/datamodels"
 	"homework/models/services"
 	"strconv"
@@ -23,18 +23,16 @@ func (this *ShopController) PostRegister() {
 		userName = this.GetString("userName")
 		password = this.GetString("password")
 	)
-	//ozzo-validation
 	shop := &datamodels.Shop{
 		UserName:     userName,
 		ShopName:     shopName,
 		HashPassword: password,
 	}
 	_, err := this.ShopService.AddShop(shop)
-	if common.CheckErr(err) {
-		this.Abort("401")
-
+	if err != nil {
+		this.Abort("500")
 	}
-	this.Ctx.Redirect(302, "/shop/login")
+	this.Redirect("/shop/login", 302)
 }
 
 func (this *ShopController) GetLogin() {
@@ -42,27 +40,22 @@ func (this *ShopController) GetLogin() {
 }
 
 func (this *ShopController) PostLogin() {
-	//1.获取用户提交的表单信息
 	var (
 		userName = this.GetString("userName")
 		password = this.GetString("password")
 	)
-	//2.验证好账号密码正确
 	user, isOk := this.ShopService.IsPwdSuccess(userName, password)
 	if !isOk {
-		this.Layout = "shop/login.html"
 		this.Abort("401")
 	}
-	//3.写入用户ID到cookie中
 	uidByte := []byte(strconv.FormatInt(user.ID, 10))
-	uidString, e := common.EnPwdCode(uidByte)
-	if common.CheckErr(e) {
-		this.Abort("401")
-
+	uidString, e := encrypt.EnPwdCode(uidByte)
+	if e != nil {
+		this.Abort("501")
 	}
 	this.Ctx.SetCookie("uid", strconv.FormatInt(user.ID, 10), "/")
 	this.Ctx.SetCookie("sign", uidString, "/")
-	this.Ctx.Redirect(302, "/product/list")
+	this.Redirect("/", 302)
 }
 
 func (this *ShopController) GetLogout() {

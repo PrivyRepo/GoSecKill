@@ -2,21 +2,29 @@ package main
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/logs"
+	_ "homework/backend/middleware"
 	_ "homework/backend/routers"
+	"os"
+	"os/exec"
+	"path/filepath"
 )
 
-var FilterUser = func(ctx *context.Context) {
-	cookie := ctx.GetCookie("uid")
-	logs.Info(cookie)
-	if ctx.Request.RequestURI != "/shop/login" && ctx.Request.RequestURI != "/shop/register" && cookie == "" {
-		ctx.Redirect(302, "/shop/login")
+func GetAPPRootPath() string {
+	file, err := exec.LookPath(os.Args[0])
+	if err != nil {
+		return ""
 	}
+	p, err := filepath.Abs(file)
+	if err != nil {
+		return ""
+	}
+	return filepath.Dir(p)
 }
 
 func main() {
-	beego.InsertFilter("/*", beego.BeforeRouter, FilterUser)
-	beego.SetStaticPath("/assets", "assets")
+	logs.SetLogger("file", `{"filename":"error.log","level":5}`)
+	beego.SetViewsPath(GetAPPRootPath() + "/views/")
+	beego.SetStaticPath("/assets", GetAPPRootPath()+"/assets")
 	beego.Run()
 }

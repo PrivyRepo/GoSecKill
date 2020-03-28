@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+    <link rel="stylesheet" type="text/css" href="/public/css/site.css">
+    <style type="text/css">
+        *{margin: 0;padding: 0}
+        html,body{height: 100%}     /*这里很关键*/
+
+        .outer-wrap{
+            /*只有同时为html和body设置height: 100%时，这里的height才生效，
+            并且随浏览器窗口变化始终保持和浏览器视窗等高*/
+            height: 100%;
+            position: relative;
+        }
+        .login-panel{
+            width: 400px;
+            height: 300px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -150px;
+            margin-left: -200px;
+        }
+    </style>
+</head>
+<body>
+<div class="outer-wrap">
+    <div class="login-panel">
+        <form action="/api/user/login" id = "form" method="POST">
+            <div class="container">
+                <label><b>用户名</b></label>
+                <input type="text" placeholder="Enter Username" name="userName" required>
+
+                <label><b>密码</b></label>
+                <input type="password" placeholder="Enter Password" name="password" required>
+
+                <button type="submit">登录</button>
+                <label><a href="/user/register.html">注册用户</a></label>
+            </div>
+        </form>
+    </div>
+    <script>
+        var form = document.getElementById('form')
+        form.addEventListener('submit',function(e){
+            e.preventDefault()
+            var formData = new FormData(form)
+            $.ajax({
+                type:"post",
+                url:"/api/user/login",
+                data:formData
+            })
+        })
+    </script>
+</div>
+</body>
+<script type="text/javascript" src="/public/js/jquery.min.js"></script>

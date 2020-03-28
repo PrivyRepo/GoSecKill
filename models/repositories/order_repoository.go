@@ -2,26 +2,26 @@ package repositories
 
 import (
 	"database/sql"
-	"homework/common"
+	"fmt"
+	mysql2 "homework/common/mysql"
+	"homework/common/reflect"
 	"homework/models/datamodels"
 	"strconv"
 )
 
 type IOrderRepository interface {
 	Conn() error
-	Insert(product *datamodels.Order) (int64, error)
-	Delete(int64) bool
+	Insert(product *datamodels.Order) (int, error)
+	Delete(int) bool
 	Update(order *datamodels.Order) error
-	SelectByKey(int64) (*datamodels.Order, error)
-	SelectAll() ([]*datamodels.Order, error)
-	SelectAllWithInfo() (map[int]map[string]string, error)
-	SelectWithInfoByKey(int64) (map[string]string, error)
-	UpdateInfoByKey(int64) bool
+	SelectById(int) (order *datamodels.Order, err error)
+	SelectWithInfoByUser(int, int, int) (map[int]map[string]string, int, error)
+	SelectWithInfoByShop(int, int, int) (map[int]map[string]string, int, error)
+	CloseConn()
 }
 
 func NewOrderManagerRepository(table string, sql *sql.DB) IOrderRepository {
 	return &OrderManagerRepository{table, sql}
-
 }
 
 type OrderManagerRepository struct {
@@ -29,21 +29,13 @@ type OrderManagerRepository struct {
 	mysqlConn *sql.DB
 }
 
-func (o *OrderManagerRepository) UpdateInfoByKey(id int64) bool {
-	if err := o.Conn(); err != nil {
-		return false
-	}
-	sql := "UPDATE `order` SET orderStatus = 1 WHERE ID = " + strconv.FormatInt(id, 10)
-	_, e := o.mysqlConn.Exec(sql)
-	if e != nil {
-		return false
-	}
-	return true
+func (o *OrderManagerRepository) CloseConn() {
+	o.mysqlConn.Close()
 }
 
 func (o *OrderManagerRepository) Conn() error {
 	if o.mysqlConn == nil {
-		mysql, err := common.NewMysqlConn()
+		mysql, err := mysql2.NewMysqlConn()
 		if err != nil {
 			return err
 		}
@@ -55,30 +47,51 @@ func (o *OrderManagerRepository) Conn() error {
 	return nil
 }
 
-func (o *OrderManagerRepository) Insert(order *datamodels.Order) (productID int64, err error) {
+func (o *OrderManagerRepository) SelectById(id int) (order *datamodels.Order, err error) {
 	if err = o.Conn(); err != nil {
 		return
 	}
-	sql := "INSERT `" + o.table + "` set userID=?,productID=?,orderStatus=?"
+	sql := "SELECT * FROM `order` WHERE id = " + strconv.Itoa(id)
+	row, e := o.mysqlConn.Query(sql)
+	defer row.Close()
+	if e != nil {
+		return nil, e
+	}
+	result := mysql2.GetResultRow(row)
+	if len(result) == 0 {
+		return &datamodels.Order{}, nil
+	}
+	orderResult := &datamodels.Order{}
+	reflect.DataToStructByTagSql(result, orderResult)
+	return orderResult, nil
+
+}
+func (o *OrderManagerRepository) Insert(order *datamodels.Order) (productID int, err error) {
+	if err = o.Conn(); err != nil {
+		return
+	}
+	sql := "INSERT `order` set userID=?,productID=?,orderPayStatus=?,orderDeliverStatus=?"
 	stmt, err := o.mysqlConn.Prepare(sql)
+	defer stmt.Close()
 	if err != nil {
 		return
 	}
-	result, err := stmt.Exec(order.UserId, order.ProductId, order.OrderStatus)
+	result, err := stmt.Exec(order.UserId, order.ProductId, order.OrderPayStatus, order.OrderDeliverStatus)
 	if err != nil {
 		return
 	}
-	productID, err = result.LastInsertId()
-	return
+	productid, err := result.LastInsertId()
+	return int(productid), err
 
 }
 
-func (o *OrderManagerRepository) Delete(productid int64) (isok bool) {
+func (o *OrderManagerRepository) Delete(productid int) (isok bool) {
 	if err := o.Conn(); err != nil {
 		return
 	}
-	sql := "DELETE FROM `" + o.table + "` WHERE ID=?"
+	sql := "DELETE FROM `order` WHERE ID=?"
 	stmt, e := o.mysqlConn.Prepare(sql)
+	defer stmt.Close()
 	if e != nil {
 		return false
 	}
@@ -93,78 +106,65 @@ func (o *OrderManagerRepository) Update(order *datamodels.Order) error {
 	if err := o.Conn(); err != nil {
 		return err
 	}
-	sql := "Update " + o.table + "SET userID=?,productID=?,orderStatus=? WHERE ID = " + strconv.FormatInt(order.ID, 10)
+	sql := "Update `order` SET userID=?,productID=?,orderPayStatus=?,orderDeliverStatus=? WHERE ID = " + strconv.FormatInt(order.ID, 10)
 	stmt, e := o.mysqlConn.Prepare(sql)
+	defer stmt.Close()
 	if e != nil {
 		return e
 	}
-	_, e = stmt.Exec(order.UserId, order.ProductId, order.OrderStatus, order.ID)
+	_, e = stmt.Exec(order.UserId, order.ProductId, order.OrderPayStatus, order.OrderDeliverStatus)
 	return e
-
 }
 
-func (o *OrderManagerRepository) SelectByKey(id int64) (*datamodels.Order, error) {
+func (o *OrderManagerRepository) SelectWithInfoByUser(id int, start int, limit int) (map[int]map[string]string, int, error) {
 	if err := o.Conn(); err != nil {
-		return &datamodels.Order{}, err
+		return nil, 0, err
 	}
-	sql := "SELECT * FROM" + o.table + "WHERE ID = " + strconv.FormatInt(id, 10)
+	var count int
+	CountSql := "SELECT COUNT(*) FROM `order` WHERE userID = " + strconv.Itoa(id)
+	row := o.mysqlConn.QueryRow(CountSql)
+	err := row.Scan(&count)
+	if err != nil {
+		return nil, 0, err
+	}
+	sql := "SELECT o.ID , s.shopName, p.productName, o.orderPayStatus,o.orderDeliverStatus " +
+		"FROM `order` as o " +
+		"JOIN product as p ON o.productID = p.ID " +
+		"JOIN user as u ON o.userID = u.ID " +
+		"JOIN shop as s ON p.shopID = s.ID " +
+		"WHERE u.id = " + strconv.Itoa(id) + fmt.Sprintf(" LIMIT %d,%d", start, limit)
 	rows, e := o.mysqlConn.Query(sql)
+	defer rows.Close()
 	if e != nil {
-		return &datamodels.Order{}, e
+		return nil, count, e
 	}
-	resultRows := common.GetResultRow(rows)
-	if len(resultRows) == 0 {
-		return &datamodels.Order{}, e
-	}
-	order := &datamodels.Order{}
-	common.DataToStructByTagSql(resultRows, order)
-	return order, nil
-
+	return mysql2.GetResultRows(rows), count, nil
 }
 
-func (o *OrderManagerRepository) SelectAll() ([]*datamodels.Order, error) {
+func (o *OrderManagerRepository) SelectWithInfoByShop(id int, start int, limit int) (map[int]map[string]string, int, error) {
 	if err := o.Conn(); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	sql := "SELECT * FROM" + o.table
+	var count int
+	CountSql := "SELECT COUNT(*) FROM `order` as o " +
+		"JOIN `product` as p ON o.productID = p.ID " +
+		"JOIN `shop` as s ON p.shopID = s.ID" +
+		" WHERE s.ID = " + strconv.Itoa(id)
+	row := o.mysqlConn.QueryRow(CountSql)
+	err := row.Scan(&count)
+	if err != nil {
+		return nil, 0, err
+	}
+	sql := "SELECT o.ID , u.userName, p.productName, o.orderPayStatus,o.orderDeliverStatus " +
+		"FROM `order` as o " +
+		"JOIN product as p ON o.productID = p.ID " +
+		"JOIN user as u ON o.userID = u.ID " +
+		"JOIN shop as s ON p.shopID = s.ID " +
+		"WHERE s.id = " + strconv.Itoa(id) + fmt.Sprintf(" LIMIT %d,%d", start, limit)
 	rows, e := o.mysqlConn.Query(sql)
+	defer rows.Close()
 	if e != nil {
-		return nil, e
+		return nil, count, e
 	}
-	resultRows := common.GetResultRows(rows)
-	if len(resultRows) == 0 {
-		return nil, nil
-	}
-	res := make([]*datamodels.Order, 0)
-	for _, v := range resultRows {
-		order := &datamodels.Order{}
-		common.DataToStructByTagSql(v, order)
-		res = append(res, order)
-	}
-	return res, nil
-
-}
-
-func (o *OrderManagerRepository) SelectAllWithInfo() (map[int]map[string]string, error) {
-	if err := o.Conn(); err != nil {
-		return nil, err
-	}
-	sql := "SELECT o.ID,p.productName,u.userName,o.orderStatus FROM `order` as o LEFT JOIN product as p on o.productID=p.ID JOIN user as u ON o.userID = u.ID"
-	rows, e := o.mysqlConn.Query(sql)
-	if e != nil {
-		return nil, e
-	}
-	return common.GetResultRows(rows), nil
-}
-
-func (o *OrderManagerRepository) SelectWithInfoByKey(id int64) (map[string]string, error) {
-	if err := o.Conn(); err != nil {
-		return nil, err
-	}
-	sql := "SELECT o.ID , u.userName, p.productName, o.orderStatus FROM `order` as o JOIN product as p ON o.productID = p.ID JOIN user as u ON o.userID = u.ID"
-	rows, e := o.mysqlConn.Query(sql)
-	if e != nil {
-		return nil, e
-	}
-	return common.GetResultRow(rows), nil
+	return mysql2.GetResultRows(rows), count, nil
 }

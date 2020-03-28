@@ -3,7 +3,6 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
-	"homework/common"
 	"homework/models/datamodels"
 	"homework/models/services"
 	"strconv"
@@ -16,18 +15,40 @@ type ProductController struct {
 
 //列出所有商品
 func (this *ProductController) GetAll() {
-	cookiestr := this.Ctx.GetCookie("uid")
-	if cookiestr == "" {
-		this.Redirect("/shop/login", 302)
+	uidstr := this.Ctx.GetCookie("uid")
+	shopid, _ := strconv.Atoi(uidstr)
+	s := this.GetString("pagenum")
+	var indexpage int
+	indexpage, err := strconv.Atoi(s)
+	if err != nil || indexpage == 0 {
+		indexpage = 1
 	}
-	shopid, _ := strconv.ParseInt(cookiestr, 10, 64)
-	products, e := this.ProductService.GetProductByshop(shopid)
-	logs.Info(cookiestr, products)
-	if common.CheckErr(e) {
-		this.Abort("401")
+	arr, count, e := this.ProductService.GetProductByshop(int64(shopid), indexpage, 10)
+	endpage := count/10 + 1
+	if e != nil {
+		logs.Error(e)
+		this.Abort("501")
 	}
-	this.Data["shopName"] = "test"
-	this.Data["productArray"] = products
+	arrpages := []int{(indexpage-1)/5*5 + 1}
+	for i := 1; i < 5; i++ {
+		if arrpages[i-1]+1 >= endpage {
+			break
+		}
+		arrpages = append(arrpages, arrpages[i-1]+1)
+	}
+	//count
+	//count/10+1 总页数
+	//(pagenum-1)*10,10
+
+	//start:= (pagenum/5)*5	end := start+5>endpage ? start+5:endpage
+	this.Data["Count"] = count
+	this.Data["IndexPage"] = indexpage
+	this.Data["NextPage"] = indexpage + 1
+	this.Data["PrePage"] = indexpage - 1
+	this.Data["ArrayPages"] = arrpages
+	this.Data["EndPage"] = endpage
+
+	this.Data["productArray"] = arr
 	this.Layout = "shared/layout.html"
 	this.TplName = "product/view.html"
 }
@@ -45,13 +66,12 @@ func (this *ProductController) PostInsert() {
 	product := datamodels.Product{}
 	if err := this.ParseForm(&product); err != nil {
 		logs.Error(err)
-		this.Abort("401")
+		this.Abort("501")
 	}
 	logs.Info(product)
 	_, e := this.ProductService.InsertProduct(&product)
-	if common.CheckErr(e) {
-		this.Abort("401")
-
+	if e != nil {
+		this.Abort("501")
 	}
 	this.Ctx.Redirect(302, "/product/list")
 }
@@ -60,13 +80,13 @@ func (this *ProductController) PostInsert() {
 func (this *ProductController) GetManager() {
 	idString := this.GetString("id")
 	i, err := strconv.ParseInt(idString, 10, 16)
-	if common.CheckErr(err) {
-		this.Abort("401")
+	if err != nil {
+		this.Abort("501")
 
 	}
 	product, err := this.ProductService.GetProductByID(i)
-	if common.CheckErr(err) {
-		this.Abort("401")
+	if err != nil {
+		this.Abort("501")
 
 	}
 	this.Data["product"] = product
@@ -80,12 +100,12 @@ func (this *ProductController) PostManager() {
 	if err := this.ParseForm(&product); err != nil {
 		logs.Info(this.Ctx.Request)
 		logs.Error(err)
-		this.Abort("401")
+		this.Abort("501")
 	}
 	logs.Info(product)
 	err := this.ProductService.UpdateProduct(&product)
-	if common.CheckErr(err) {
-		this.Abort("401")
+	if err != nil {
+		this.Abort("501")
 	}
 	this.Ctx.Redirect(302, "/product/list")
 }
@@ -94,7 +114,7 @@ func (this *ProductController) PostManager() {
 func (this *ProductController) GetDelete() {
 	idString := this.GetString("id")
 	i, err := strconv.ParseInt(idString, 10, 16)
-	if common.CheckErr(err) {
+	if err != nil {
 		this.Abort("401")
 	}
 	isok := this.ProductService.DeleteProductByID(i)

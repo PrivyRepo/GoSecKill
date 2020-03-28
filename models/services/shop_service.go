@@ -23,11 +23,10 @@ func (s *ShopService) IsPwdSuccess(userName string, pwd string) (shop *datamodel
 	if e != nil {
 		return
 	}
-	isOK, _ = ValidatePassword(pwd, shop.HashPassword)
-	if !isOK {
+	if !ValidatePassword(pwd, shop.HashPassword) {
 		return &datamodels.Shop{}, false
 	}
-	return
+	return shop, true
 }
 
 func (s *ShopService) AddShop(shop *datamodels.Shop) (shopId int64, err error) {

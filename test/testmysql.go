@@ -3,7 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"homework/common"
+	"homework/common/mysql"
 	"log"
 	"net/http"
 )
@@ -24,7 +24,7 @@ func main4() {
 		if err != nil {
 			log.Println(err)
 		}
-		resultRows := common.GetResultRows(rows)
+		resultRows := mysql.GetResultRows(rows)
 		bytes, err := json.Marshal(resultRows)
 		if err != nil {
 			log.Println(err)

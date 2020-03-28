@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var Speed []int
 var Efficiency []int
@@ -57,7 +59,7 @@ func max(a, b int) int {
 	return b
 }
 
-func main() {
+func main12() {
 	speed := []int{2, 8, 2}
 	efficiency := []int{2, 7, 1}
 	res := maxPerformance(3, speed, efficiency, 2)

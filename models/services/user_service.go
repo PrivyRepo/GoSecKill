@@ -1,7 +1,6 @@
 package services
 
 import (
-	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"homework/models/datamodels"
 	"homework/models/repositories"
@@ -25,11 +24,10 @@ func (u *UserService) IsPwdSuccess(userName string, pwd string) (user *datamodel
 	if err != nil {
 		return
 	}
-	isOK, _ = ValidatePassword(pwd, user.HashPassword)
-	if !isOK {
+	if !ValidatePassword(pwd, user.HashPassword) {
 		return &datamodels.User{}, false
 	}
-	return
+	return user, true
 }
 
 func (u *UserService) AddUser(user *datamodels.User) (userId int64, err error) {
@@ -45,10 +43,9 @@ func GeneratePassword(userPassword string) ([]byte, error) {
 	return bcrypt.GenerateFromPassword([]byte(userPassword), bcrypt.DefaultCost)
 }
 
-func ValidatePassword(userPassword string, hashed string) (isOK bool, err error) {
-	if err = bcrypt.CompareHashAndPassword([]byte(hashed), []byte(userPassword)); err != nil {
-		return false, errors.New("密码比对错误！")
+func ValidatePassword(userPassword string, hashed string) (isOK bool) {
+	if err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(userPassword)); err == nil {
+		return true
 	}
-
-	return true, nil
+	return
 }

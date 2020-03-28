@@ -38,4 +38,14 @@
         </div>
     </div>
 </div>
+<div class="text-center">
+    <ul class="pagination pagination-sm">
+        <li class="page-item {{if le .IndexPage 1}}disabled{{end}}"><a class="page-link" href="{{if gt .IndexPage 1}}/product/list?pagenum={{.PrePage}}{{else}}#{{end}}">Previous</a></li>
+        {{range .ArrayPages}}
+            <li class="page-item {{if eq . $.IndexPage}}active{{end}}"><a class="page-link" href="/product/list?pagenum={{.}}">{{.}}</a></li>
+        {{end}}
+        <li class="page-item {{if ge .IndexPage .EndPage}}disabled{{end}}"><a class="page-link" href="{{if lt .IndexPage .EndPage}}/product/list?pagenum={{.NextPage}}{{else}}#{{end}}">Next</a></li>
+        <li class="page-item disabled"><a class="page-link" href="#">总计{{.Count}}条，{{.EndPage}}页</a></li>
+    </ul>
+</div>
 
