@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Css -->
+    <link rel="stylesheet" href="/public/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/public/css/font-icons.css" />
+    <link rel="stylesheet" href="/public/css/style.css" />
+    <link rel="stylesheet" href="/public/css/color.css" />
+    <link rel="stylesheet" href="/public/css/mystyle.css" />
+</head>
+<body>
+<header class="nav">
+    <div style = "position: fixed;height:80px;left:0;right: 0;top:0;background-color: #261656;font-size: 16px;color: white">
+        <div class="left px-xl-5 py-xl-4">
+            <a href="/product/list" class="white">
+                <i class="ui-github">
+                </i>
+                Home
+            </a>
+        </div>
+        <div class="right px-xl-5 py-xl-4 ">
+            <a href="/user/logout" class="white mx-5" ><i class="ui-user"></i>Log Out</a>
+            <a href="/order/list" class="white" >
+                <i class="ui-bag"></i>Order
+            </a>
+        </div>
+    </div>
+
+</header> <!-- end navigation -->
+<div class="panel-body">
+    <div class="table-responsive noSwipe">
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th style="width:20%;">订单ID</th>
+                <th style="width:17%;">店铺名称</th>
+                <th style="width:15%;">商品名称</th>
+                <th style="width:10%;">付款状态</th>
+                <th style="width:10%;">发货状态</th>
+                <th style="width:10%;">编辑订单</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{range $i, $v := .orders}}
+                <tr>
+                    <td class="user-avatar cell-detail user-info">{{$v.ID}}</td>
+                    <td class="cell-detail">{{$v.shopName}}</td>
+                    <td class="milestone"> {{$v.productName}}
+                    </td>
+                    <td class="cell-detail">{{ if eq $v.orderPayStatus "0"}} 未付款 {{else if eq $v.orderPayStatus "1"}} 已付款  {{else}} 已取消 {{end}}</td>
+                    <td class="cell-detail">{{ if eq $v.orderDeliverStatus "0"}} 未发货  {{else}} 已发货 {{end}} </td>
+                    <td class="cell-detail">{{ if eq $v.orderPayStatus "0"}} <a href="/order/cancel?id={{$v.ID}}"><button class="btn btn-space btn-primary p-xl-1">取消订单</button></a><a href="/order/payoff?id={{$v.ID}}"><button class="btn btn-space btn-primary ml-xl-5">付款</button></a>{{end}} </td>
+
+
+                </tr>
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="text-center">
+    <ul class="pagination pagination-sm ">
+        <li class="page-item {{if le .IndexPage 1}}disabled{{end}}"><a class="page-link" href="{{if gt .IndexPage 1}}/order/list?pagenum={{.PrePage}}{{else}}#{{end}}">Previous</a></li>
+        {{range .ArrayPages}}
+            <li class="page-item {{if eq . $.IndexPage}}active{{end}}"><a class="page-link" href="/order/list?pagenum={{.}}">{{.}}</a></li>
+        {{end}}
+        <li class="page-item {{if ge .IndexPage .EndPage}}disabled{{end}}"><a class="page-link" href="{{if lt .IndexPage .EndPage}}/order/list?pagenum={{.NextPage}}{{else}}#{{end}}">Next</a></li>
+        <li class="page-item disabled"><a class="page-link" href="#">总计{{.Count}}条，{{.EndPage}}页</a></li>
+    </ul>
+</div>
+</body>
+</html>

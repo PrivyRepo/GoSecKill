@@ -2,12 +2,11 @@ package rabbitmq
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"github.com/streadway/amqp"
 	"homework/models/datamodels"
 	"log"
-
-	"encoding/json"
 	"sync"
 )
 
@@ -110,7 +109,6 @@ func (r *RabbitMQ) PublishSimple(message string) error {
 		})
 	return nil
 }
-
 //simple 模式下消费者
 func (r *RabbitMQ) ConsumeSimple(db *sql.DB) {
 	//1.申请队列，如果队列不存在会自动创建，存在则跳过创建
@@ -130,14 +128,12 @@ func (r *RabbitMQ) ConsumeSimple(db *sql.DB) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 	//消费者流控
 	r.channel.Qos(
 		1,     //当前消费者一次能接受的最大消息数量
 		0,     //服务器传递的最大容量（以八位字节为单位）
 		false, //如果设置为true 对channel可用
 	)
-
 	//接收消息
 	msgs, err := r.channel.Consume(
 		q.Name, // queue
@@ -157,7 +153,6 @@ func (r *RabbitMQ) ConsumeSimple(db *sql.DB) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 	forever := make(chan bool)
 	//启用协程处理消息
 	go func() {
@@ -169,7 +164,7 @@ func (r *RabbitMQ) ConsumeSimple(db *sql.DB) {
 				fmt.Println(err)
 			}
 			tx, e := db.Begin()
-			if e != nil {
+			if e == nil {
 				updateSQL := "UPDATE `product` SET productNum = productNum -1 WHERE ID = ?"
 				_, e2 := tx.Exec(updateSQL, message.ProductID)
 				insertSQL := "INSERT `order` set userID=?,productID=?,orderPayStatus=?,orderDeliverStatus=?"
@@ -177,6 +172,7 @@ func (r *RabbitMQ) ConsumeSimple(db *sql.DB) {
 				if e1 != nil || e2 != nil {
 					tx.Rollback()
 				} else {
+					log.Println(message)
 					tx.Commit()
 				}
 			}
@@ -185,8 +181,6 @@ func (r *RabbitMQ) ConsumeSimple(db *sql.DB) {
 			d.Ack(false)
 		}
 	}()
-
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 	<-forever
-
 }

@@ -47,6 +47,7 @@ func (o *OrderManagerRepository) Conn() error {
 	return nil
 }
 
+
 func (o *OrderManagerRepository) SelectById(id int) (order *datamodels.Order, err error) {
 	if err = o.Conn(); err != nil {
 		return

@@ -8,6 +8,7 @@ import (
 
 type IOrderService interface {
 	UpdateOrder(*datamodels.Order) error
+	CancelOrder(int) bool
 	InsertOrder(*datamodels.Order) (int, error)
 	GetOrderByID(int) (*datamodels.Order, error)
 	GetOrderInfoByUser(int, int, int) (map[int]map[string]string, int, error)
@@ -22,8 +23,9 @@ type OrderService struct {
 func (o *OrderService) GetOrderByID(id int) (*datamodels.Order, error) {
 	return o.orderRepository.SelectById(id)
 }
-func (o *OrderService) DeleteOrderByID(id int) bool {
-	return o.orderRepository.Delete(id)
+
+func (o *OrderService) CancelOrder(order int) bool {
+	return o.orderRepository.Delete(order)
 }
 
 func (o *OrderService) UpdateOrder(order *datamodels.Order) error {

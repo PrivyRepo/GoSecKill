@@ -2,10 +2,15 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"homework/common/rabbitmq"
+	"homework/seckill/tool/config"
 	"homework/seckill/tool/consistent"
 	"homework/seckill/tool/ip"
+	"log"
+
+	//"homework/seckill/tool/ip"
+
+	//"homework/seckill/tool/ip"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -13,17 +18,35 @@ import (
 	"sync"
 )
 
-//设置集群地址,最好内网ip
-var (
-	hostArray = []string{"192.168.19.101", "192.168.19.102", "192.168.19.103"}
-	//hostArray = []string{"127.0.0.1", "127.0.0.1"}
-	localHost = ""
-	port      = "8083"
-)
-
 var hashConsistent *consistent.Consistent
 var rabbitMqValidate *rabbitmq.RabbitMQ
 var countControl = &CountControl{sourceArray: make(map[int]int)}
+
+func init() {
+	hostArray = config.ReadLineFile("appsconfig")
+	hashConsistent = consistent.NewConsistent()
+	for _, v := range hostArray {
+		hashConsistent.Add(v)
+	}
+	log.Println(hashConsistent)
+}
+
+//设置集群地址,最好内网ip
+var (
+	//hostArray = []string{"192.168.19.101", "192.168.19.102", "192.168.19.103"}
+	//hostArray = []string{"127.0.0.1"}
+	hostArray []string
+	localHost string
+	port      = "8083"
+)
+
+//func init(){
+//	hostArray := ReadLineFile("appsconfig")
+//	hashConsistent = consistent.NewConsistent()
+//	for _, v := range hostArray {
+//		hashConsistent.Add(v)
+//	}
+//}
 
 //用来存放商品数量
 type CountControl struct {
@@ -41,7 +64,7 @@ func (m *CountControl) SetCount(uid int, count int) bool {
 	m.RWMutex.Lock()
 	defer m.RWMutex.Unlock()
 	m.sourceArray[uid] = count
-	fmt.Println("商品超卖控制：", m.sourceArray)
+	log.Println("商品超卖控制：", uid,count)
 	return true
 }
 func (m *CountControl) IsEnough(uid int) (isOk bool) {
@@ -53,6 +76,12 @@ func (m *CountControl) IsEnough(uid int) (isOk bool) {
 	}
 	return false
 }
+func (m *CountControl) Reset(){
+	m.RWMutex.Lock()
+	defer m.RWMutex.Unlock()
+	countControl = &CountControl{sourceArray: make(map[int]int)}
+}
+
 func (m *CountControl) LocalOrder(uidstr string, productstr string) bool {
 	userID, _ := strconv.ParseInt(uidstr, 10, 64)
 	productID, _ := strconv.ParseInt(productstr, 10, 64)
@@ -67,21 +96,27 @@ func (m *CountControl) LocalOrder(uidstr string, productstr string) bool {
 		}
 		//4.生产消息
 		err = rabbitMqValidate.PublishSimple(string(byteMessage))
-		fmt.Println("生成订单", message)
 		if err != nil {
 			return false
 		}
+		log.Println("生成订单", message)
 		return true
 	} else {
 		return false
 	}
 }
 
+func ResetCount(w http.ResponseWriter, req *http.Request) {
+	countControl.Reset()
+	w.Write([]byte("true"))
+	return
+}
+
 func KillOrder(w http.ResponseWriter, req *http.Request) {
 	//获取商品id
-	uid, uerr := req.Cookie("uid")
+	uid, err := req.Cookie("uid")
 	queryForm, perr := url.ParseQuery(req.URL.RawQuery)
-	if uerr != nil || perr != nil || len(queryForm["productid"]) <= 0 {
+	if err != nil || perr != nil || len(queryForm["productid"]) <= 0 {
 		w.Write([]byte("false"))
 		return
 	}
@@ -96,7 +131,7 @@ func KillOrder(w http.ResponseWriter, req *http.Request) {
 		productStr := queryForm["productid"][0]
 		right = countControl.LocalOrder(uid.Value, productStr)
 	} else {
-		distUrl := "http://" + hostRequest + ":" + port + "/getOne?" + req.URL.RawQuery
+		distUrl := "http://" + hostRequest + ":" + port + "/seckill/getOne?" + req.URL.RawQuery
 		right = Proxy(hostRequest, req, distUrl)
 	}
 	if !right {
@@ -130,7 +165,7 @@ func RegisterProduct(w http.ResponseWriter, req *http.Request) {
 		}
 		right = countControl.SetCount(productid, count)
 	} else {
-		distUrl := "http://" + hostRequest + ":" + port + "/setCount?" + req.URL.RawQuery
+		distUrl := "http://" + hostRequest + ":" + port + "/seckill/setCount?" + req.URL.RawQuery
 		right = Proxy(hostRequest, req, distUrl)
 	}
 	if !right {
@@ -144,7 +179,7 @@ func RegisterProduct(w http.ResponseWriter, req *http.Request) {
 
 //代理
 func Proxy(host string, request *http.Request, url string) bool {
-	fmt.Println("走代理", url)
+	log.Println("走代理", url)
 	//获取uid
 	uidPre, err := request.Cookie("uid")
 	if err != nil {
@@ -167,7 +202,7 @@ func Proxy(host string, request *http.Request, url string) bool {
 	req.AddCookie(cookieUid)
 	req.AddCookie(cookieSign)
 	response, err := client.Do(req)
-	fmt.Println("代理返回", response.Header)
+	log.Println("代理返回", response.Header)
 	if err != nil {
 		return false
 	}
@@ -182,31 +217,27 @@ func Proxy(host string, request *http.Request, url string) bool {
 			return false
 		}
 	}
-
 	return false
 }
 
-func main() {
-	//负载均衡器设置
-	//采用一次性hash算法
-	hashConsistent = consistent.NewConsistent()
-	for _, v := range hostArray {
-		hashConsistent.Add(v)
-	}
 
+func main() {
 	localIp, err := ip.GetIntranceIp()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	localHost = localIp
-	fmt.Println("获得本机Ip为：", localHost)
+	log.Println("获得本机Ip为：", localHost)
 
-	rabbitMqValidate = rabbitmq.NewRabbitMQSimple("imoocProduct")
+	rabbitMqValidate = rabbitmq.NewRabbitMQSimple("orders")
 	defer rabbitMqValidate.Destory()
-	http.HandleFunc("/setCount", RegisterProduct)
-	http.HandleFunc("/getOne", KillOrder)
+	http.HandleFunc("/seckill/setCount", RegisterProduct)
+	http.HandleFunc("/seckill/getOne", KillOrder)
+	http.HandleFunc("/seckill/reset",ResetCount)
 	err = http.ListenAndServe(":8083", nil)
 	if err != nil {
-		fmt.Print("失败")
+		log.Print("失败")
 	}
 }
+
+

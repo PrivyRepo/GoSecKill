@@ -8098,11 +8098,11 @@ module.exports = function(Chart) {
 
 			helpers.retinaScale(chart);
 
-			// Notify any plugins about the resize
+			// notify any plugins about the resize
 			var newSize = { width: newWidth, height: newHeight };
 			Chart.plugins.notify('resize', [me, newSize]);
 
-			// Notify of resize
+			// notify of resize
 			if (me.options.onResize) {
 				me.options.onResize(me, newSize);
 			}

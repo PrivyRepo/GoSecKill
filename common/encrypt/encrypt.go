@@ -98,5 +98,4 @@ func DePwdCode(pwd string) ([]byte, error) {
 	}
 	//执行AES解密
 	return AesDeCrypt(pwdByte, PwdKey)
-
 }

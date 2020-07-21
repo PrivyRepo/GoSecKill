@@ -1,8 +1,0 @@
-2020/03/22 19:53:47.821 [E] [value.go:460]  Error 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '10' at line 1
-2020/03/22 20:22:09.848 [E] [template.go:176]  parse template err: order/view.html template: order/view.html:45: unexpected bad character U+002D '-' in command
-2020/03/22 20:22:09.848 [W] [beego.go:103]  template: order/view.html:45: unexpected bad character U+002D '-' in command
-2020/03/22 21:04:16.270 [E] [value.go:460]  Error 1054: Unknown column 'o.shopID' in 'where clause'
-2020/03/22 21:07:22.758 [E] [value.go:460]  Error 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`product` as p ON o.productID = p.IDJOIN `shop` as s ON p.shopID = s.ID WHERE s.' at line 1
-2020/03/22 21:08:27.834 [E] [value.go:460]  Error 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`product` as p ON o.productID = p.ID JOIN `shop` as s ON p.shopID = s.ID WHERE s' at line 1
-2020/03/22 21:09:14.008 [E] [value.go:460]  Error 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`product` as p ON o.productID = p.ID JOIN `shop` as s ON p.shopID = s.ID WHERE s' at line 1
-2020/03/22 21:10:42.301 [E] [value.go:460]  Error 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '-10,10' at line 1

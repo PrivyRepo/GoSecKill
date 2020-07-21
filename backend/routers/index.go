@@ -23,8 +23,7 @@ func init() {
 	ordersevice := services.NewOrderService(orderrepo)
 	ordercontroller := &controllers.OrderController{OrderService: ordersevice}
 	beego.Router("/order/list", ordercontroller, "get:GetList")
-	beego.Router("/order/deliver", ordercontroller, "post:GetUpdate")
-
+	beego.Router("/order/deliver", ordercontroller, "get:GetUpdate")
 	/*
 		/product
 	*/
@@ -36,7 +35,6 @@ func init() {
 	beego.Router("/product/update", productcontroller, "get:GetManager;post:PostManager")
 	beego.Router("/product/insert", productcontroller, "get:GetInsert;post:PostInsert")
 	beego.Router("/product/delete", productcontroller, "get:GetDelete")
-
 	/*
 		/shop
 	*/

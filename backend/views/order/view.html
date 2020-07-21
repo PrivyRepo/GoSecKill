@@ -28,8 +28,9 @@
                                 <td class="cell-detail">{{$v.userName}}</td>
                                 <td class="milestone"> {{$v.productName}}
                                 </td>
-                                <td class="cell-detail">{{ if eq $v.orderPayStatus "0"}} 未付款 {{else if $v.orderPayStatus "1"}} 已付款{{else}} 已取消 {{end}}</td>
-                                <td class="cell-detail">{{ if eq $v.orderDeliverStatus "0"}} 未发货 {{else}} 已发货 {{end}}</td>
+                                <td class="cell-detail">{{ if eq $v.orderPayStatus "0"}} 未付款 {{else if eq $v.orderPayStatus "1"}} 已付款  {{else}} 已取消 {{end}}</td>
+                                <td class="cell-detail">{{ if eq $v.orderDeliverStatus "0"}} 未发货  {{ if eq $v.orderPayStatus "1"}} <a href="/order/deliver?id={{$v.ID}}"><button class="btn btn-space btn-primary" style="margin-left: 50px">发货</button></a>{{end}}{{else}} 已发货 {{end}} </td>
+
                             </tr>
                             {{end}}
                             </tbody>

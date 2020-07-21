@@ -1,0 +1,6 @@
+2020/05/21 14:25:27.919 [E] [server.go:2802]  template: order/view.html:31:111: executing "order/view.html" at <$v.orderPayStatus>: orderPayStatus is not a method but has arguments
+2020/05/21 14:25:31.742 [E] [server.go:2802]  template: order/view.html:31:111: executing "order/view.html" at <$v.orderPayStatus>: orderPayStatus is not a method but has arguments
+2020/05/21 14:25:36.296 [E] [server.go:2802]  template: order/view.html:31:111: executing "order/view.html" at <$v.orderPayStatus>: orderPayStatus is not a method but has arguments
+2020/05/21 14:25:41.993 [E] [server.go:2802]  template: order/view.html:31:111: executing "order/view.html" at <$v.orderPayStatus>: orderPayStatus is not a method but has arguments
+2020/05/21 14:26:02.411 [E] [server.go:2802]  template: order/view.html:31:111: executing "order/view.html" at <$v.orderPayStatus>: orderPayStatus is not a method but has arguments
+2020/05/21 14:26:25.365 [E] [server.go:2802]  template: order/view.html:31:111: executing "order/view.html" at <$v.orderPayStatus>: orderPayStatus is not a method but has arguments

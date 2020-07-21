@@ -1,0 +1,99 @@
+2020/05/22 12:59:19.094 [C]  the request url is  /shop/login
+2020/05/22 12:59:19.094 [C]  Handler crashed with error can't find templatefile in the path:C:\Users\10ngui\AppData\Local\Temp/views//shop/login.html
+2020/05/22 12:59:19.094 [C]  D:/WinPath/Go/src/runtime/panic.go:679
+2020/05/22 12:59:19.094 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/template.go:75
+2020/05/22 12:59:19.094 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:306
+2020/05/22 12:59:19.094 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:257
+2020/05/22 12:59:19.094 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:237
+2020/05/22 12:59:19.094 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/router.go:865
+2020/05/22 12:59:19.095 [C]  D:/WinPath/Go/src/net/http/server.go:2802
+2020/05/22 12:59:19.095 [C]  D:/WinPath/Go/src/net/http/server.go:1890
+2020/05/22 12:59:19.095 [C]  D:/WinPath/Go/src/runtime/asm_amd64.s:1357
+2020/05/22 12:59:22.609 [C]  the request url is  /shop/login
+2020/05/22 12:59:22.609 [C]  Handler crashed with error can't find templatefile in the path:C:\Users\10ngui\AppData\Local\Temp/views//shop/login.html
+2020/05/22 12:59:22.609 [C]  D:/WinPath/Go/src/runtime/panic.go:679
+2020/05/22 12:59:22.609 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/template.go:75
+2020/05/22 12:59:22.609 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:306
+2020/05/22 12:59:22.609 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:257
+2020/05/22 12:59:22.609 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:237
+2020/05/22 12:59:22.609 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/router.go:865
+2020/05/22 12:59:22.609 [C]  D:/WinPath/Go/src/net/http/server.go:2802
+2020/05/22 12:59:22.609 [C]  D:/WinPath/Go/src/net/http/server.go:1890
+2020/05/22 12:59:22.609 [C]  D:/WinPath/Go/src/runtime/asm_amd64.s:1357
+2020/05/22 12:59:41.058 [C]  the request url is  /shop/login
+2020/05/22 12:59:41.058 [C]  Handler crashed with error can't find templatefile in the path:C:\Users\10ngui\AppData\Local\Temp/views//shop/login.html
+2020/05/22 12:59:41.058 [C]  D:/WinPath/Go/src/runtime/panic.go:679
+2020/05/22 12:59:41.058 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/template.go:75
+2020/05/22 12:59:41.058 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:306
+2020/05/22 12:59:41.058 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:257
+2020/05/22 12:59:41.058 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:237
+2020/05/22 12:59:41.058 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/router.go:865
+2020/05/22 12:59:41.058 [C]  D:/WinPath/Go/src/net/http/server.go:2802
+2020/05/22 12:59:41.058 [C]  D:/WinPath/Go/src/net/http/server.go:1890
+2020/05/22 12:59:41.058 [C]  D:/WinPath/Go/src/runtime/asm_amd64.s:1357
+2020/05/22 22:52:34.530 [C]  the request url is  /shop/login
+2020/05/22 22:52:34.530 [C]  Handler crashed with error can't find templatefile in the path:C:\Users\10ngui\AppData\Local\Temp/views//shop/login.html
+2020/05/22 22:52:34.530 [C]  D:/WinPath/Go/src/runtime/panic.go:679
+2020/05/22 22:52:34.530 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/template.go:75
+2020/05/22 22:52:34.530 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:306
+2020/05/22 22:52:34.530 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:257
+2020/05/22 22:52:34.530 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:237
+2020/05/22 22:52:34.530 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/router.go:865
+2020/05/22 22:52:34.530 [C]  D:/WinPath/Go/src/net/http/server.go:2802
+2020/05/22 22:52:34.530 [C]  D:/WinPath/Go/src/net/http/server.go:1890
+2020/05/22 22:52:34.530 [C]  D:/WinPath/Go/src/runtime/asm_amd64.s:1357
+2020/05/22 22:52:58.367 [C]  the request url is  /shop/login
+2020/05/22 22:52:58.367 [C]  Handler crashed with error can't find templatefile in the path:C:\Users\10ngui\AppData\Local\Temp/views//shop/login.html
+2020/05/22 22:52:58.367 [C]  D:/WinPath/Go/src/runtime/panic.go:679
+2020/05/22 22:52:58.367 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/template.go:75
+2020/05/22 22:52:58.367 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:306
+2020/05/22 22:52:58.367 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:257
+2020/05/22 22:52:58.367 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:237
+2020/05/22 22:52:58.367 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/router.go:865
+2020/05/22 22:52:58.367 [C]  D:/WinPath/Go/src/net/http/server.go:2802
+2020/05/22 22:52:58.367 [C]  D:/WinPath/Go/src/net/http/server.go:1890
+2020/05/22 22:52:58.367 [C]  D:/WinPath/Go/src/runtime/asm_amd64.s:1357
+2020/05/22 22:52:59.064 [C]  the request url is  /shop/login
+2020/05/22 22:52:59.064 [C]  Handler crashed with error can't find templatefile in the path:C:\Users\10ngui\AppData\Local\Temp/views//shop/login.html
+2020/05/22 22:52:59.064 [C]  D:/WinPath/Go/src/runtime/panic.go:679
+2020/05/22 22:52:59.064 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/template.go:75
+2020/05/22 22:52:59.064 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:306
+2020/05/22 22:52:59.065 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:257
+2020/05/22 22:52:59.065 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:237
+2020/05/22 22:52:59.065 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/router.go:865
+2020/05/22 22:52:59.065 [C]  D:/WinPath/Go/src/net/http/server.go:2802
+2020/05/22 22:52:59.065 [C]  D:/WinPath/Go/src/net/http/server.go:1890
+2020/05/22 22:52:59.065 [C]  D:/WinPath/Go/src/runtime/asm_amd64.s:1357
+2020/05/22 22:52:59.752 [C]  the request url is  /shop/login
+2020/05/22 22:52:59.752 [C]  Handler crashed with error can't find templatefile in the path:C:\Users\10ngui\AppData\Local\Temp/views//shop/login.html
+2020/05/22 22:52:59.752 [C]  D:/WinPath/Go/src/runtime/panic.go:679
+2020/05/22 22:52:59.752 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/template.go:75
+2020/05/22 22:52:59.752 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:306
+2020/05/22 22:52:59.752 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:257
+2020/05/22 22:52:59.752 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:237
+2020/05/22 22:52:59.752 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/router.go:865
+2020/05/22 22:52:59.752 [C]  D:/WinPath/Go/src/net/http/server.go:2802
+2020/05/22 22:52:59.752 [C]  D:/WinPath/Go/src/net/http/server.go:1890
+2020/05/22 22:52:59.752 [C]  D:/WinPath/Go/src/runtime/asm_amd64.s:1357
+2020/05/22 22:53:00.373 [C]  the request url is  /shop/login
+2020/05/22 22:53:00.373 [C]  Handler crashed with error can't find templatefile in the path:C:\Users\10ngui\AppData\Local\Temp/views//shop/login.html
+2020/05/22 22:53:00.373 [C]  D:/WinPath/Go/src/runtime/panic.go:679
+2020/05/22 22:53:00.373 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/template.go:75
+2020/05/22 22:53:00.373 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:306
+2020/05/22 22:53:00.373 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:257
+2020/05/22 22:53:00.373 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:237
+2020/05/22 22:53:00.373 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/router.go:865
+2020/05/22 22:53:00.373 [C]  D:/WinPath/Go/src/net/http/server.go:2802
+2020/05/22 22:53:00.373 [C]  D:/WinPath/Go/src/net/http/server.go:1890
+2020/05/22 22:53:00.373 [C]  D:/WinPath/Go/src/runtime/asm_amd64.s:1357
+2020/05/22 22:53:01.060 [C]  the request url is  /shop/login
+2020/05/22 22:53:01.060 [C]  Handler crashed with error can't find templatefile in the path:C:\Users\10ngui\AppData\Local\Temp/views//shop/login.html
+2020/05/22 22:53:01.060 [C]  D:/WinPath/Go/src/runtime/panic.go:679
+2020/05/22 22:53:01.060 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/template.go:75
+2020/05/22 22:53:01.060 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:306
+2020/05/22 22:53:01.060 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:257
+2020/05/22 22:53:01.060 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/controller.go:237
+2020/05/22 22:53:01.060 [C]  D:/WinPath/Package/Go/src/github.com/astaxie/beego/router.go:865
+2020/05/22 22:53:01.060 [C]  D:/WinPath/Go/src/net/http/server.go:2802
+2020/05/22 22:53:01.060 [C]  D:/WinPath/Go/src/net/http/server.go:1890
+2020/05/22 22:53:01.060 [C]  D:/WinPath/Go/src/runtime/asm_amd64.s:1357

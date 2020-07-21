@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"homework/models/datamodels"
@@ -23,6 +24,7 @@ func (this *OrderController) GetList() {
 		indexpage = 1
 	}
 	arr, count, e := this.OrderService.GetOrderInfoByShop(uid, indexpage, 10)
+	fmt.Println(arr)
 	endpage := count/10 + 1
 	if e != nil {
 		logs.Error(e)
@@ -51,8 +53,9 @@ func (this *OrderController) GetList() {
 	this.TplName = "order/view.html"
 }
 
+
 func (this *OrderController) GetUpdate() {
-	idstr := this.GetString("orderid")
+	idstr := this.GetString("id")
 	id, _ := strconv.Atoi(idstr)
 	order, err := this.OrderService.GetOrderByID(id)
 	if err != nil {
@@ -67,3 +70,4 @@ func (this *OrderController) GetUpdate() {
 	}
 	this.Redirect("/order/list", 301)
 }
+

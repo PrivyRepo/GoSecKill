@@ -11,6 +11,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	rabbitmqConsumeSimple := rabbitmq.NewRabbitMQSimple("imoocProduct")
+	rabbitmqConsumeSimple := rabbitmq.NewRabbitMQSimple("orders")
 	rabbitmqConsumeSimple.ConsumeSimple(db)
 }
